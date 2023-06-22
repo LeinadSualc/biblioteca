@@ -9,16 +9,75 @@ class LivroController extends Controller
 {
     public function store(Request $request)
     {
-        $livro = new Livro();
-        $livro->titulo = $request->input('titulo');
-        $livro->subTitulo = $request->input('subTitulo');
-        $livro->isbn = $request->input('isbn');
-        $livro->autor_id = $request->input('autor_id');
-        $livro->editora_id = $request->input('editora_id');
-        $livro->local = $request->input('local');
-        $livro->ano = $request->input('ano');
-        $livro->save();
+        // Validação dos dados recebidos
+        $validatedData = $request->validate([
+            'titulo' => 'required|string',
+            'subTitulo' => 'nullable|string',
+            'isbn' => 'nullable|string',
+            'autor_id' => 'required|exists:autores,id',
+            'editora_id' => 'required|exists:editoras,id',
+            'local' => 'nullable|string',
+            'ano' => 'required|integer',
+        ]);
+
+    // Criação do novo livro no banco de dados
+    $livro = Livro::create([
+        'titulo' => $validatedData['titulo'],
+        'sub_titulo' => $validatedData['subTitulo'],
+        'isbn' => $validatedData['isbn'],
+        'autor_id' => $validatedData['autor_id'],
+        'editora_id' => $validatedData['editora_id'],
+        'local' => $validatedData['local'],
+        'ano' => $validatedData['ano'],
+    ]);
+
+    // Retorno da resposta em JSON com o livro criado
+    return response()->json($livro, 201);
+}
+
+public function update(Request $request, $id)
+{
+    // Busca o livro pelo ID
+    $livro = Livro::findOrFail($id);
+
+    // Validação dos dados recebidos
+    $validatedData = $request->validate([
+        'titulo' => 'required|string',
+        'subTitulo' => 'nullable|string',
+        'isbn' => 'nullable|string',
+        'autor_id' => 'required|exists:autores,id',
+        'editora_id' => 'required|exists:editoras,id',
+        'local' => 'nullable|string',
+        'ano' => 'required|integer',
+    ]);
+
+    // Atualiza os dados do livro
+    $livro->update([
+        'titulo' => $validatedData['titulo'],
+        'sub_titulo' => $validatedData['subTitulo'],
+        'isbn' => $validatedData['isbn'],
+        'autor_id' => $validatedData['autor_id'],
+        'editora_id' => $validatedData['editora_id'],
+        'local' => $validatedData['local'],
+        'ano' => $validatedData['ano'],
+    ]);
+
+    // Retorno da resposta em JSON com o livro atualizado
+    return response()->json($livro, 200);
+}
+
+public function destroy($id)
+{
+    $livro = Livro::find($id);
+
+    if ($livro) {
+        $livro->delete();
+        return response()->json(['message' => 'Livro excluído com sucesso']);
+    } else {
+        return response()->json(['message' => 'Livro não encontrado'], 404);
     }
+}
+
 
     public function index()
     {
