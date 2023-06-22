@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('editoras', function (Blueprint $table) {
             $table->id();
+            $table->string('nome');
+            $table->string('endereco');
+            $table->string('cidade');
+            $table->string('uf');
+            $table->integer('telefone');
             $table->timestamps();
         });
     }
