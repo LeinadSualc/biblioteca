@@ -25,6 +25,9 @@ Route::post('/livros', 'LivroController@store');//Recebe os dados do formulário
 
 Route::delete('/livros/{id}', 'LivroController@destroy');//Exclui um determinado livro.
 
+Route::post('/login', 'App\Http\Controllers\AuthController@login');
+
+
 
 
 
